@@ -10,4 +10,12 @@
     <ProjectReference Include="..\Domain\User.Domain\User.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\User\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+  </ItemGroup>
+
 </Project>
