@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Shared.Entities.Base;
-using Shared.Repositories.Interfaces;
+using Shared.Core.Entities;
+using Shared.Core.Repositories.Interfaces;
 
 namespace Shared.Repositories
 {
@@ -49,6 +49,5 @@ namespace Shared.Repositories
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
-
     }
 }

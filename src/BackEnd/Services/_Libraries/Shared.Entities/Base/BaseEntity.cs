@@ -1,6 +1,6 @@
 ﻿using Shared.Entities.Enums;
 
-namespace Shared.Entities
+namespace Shared.Entities.Base
 {
     /// <summary>
     /// The base entity class that includes common properties for all entities.

@@ -1,5 +1,5 @@
-﻿using Shared.Entities;
-using Shared.Entities.Enums;
+﻿using Shared.Core.Entities;
+using Shared.Core.Entities.Enums;
 using User.Domain.Enums;
 
 namespace User.Domain
@@ -33,9 +33,22 @@ namespace User.Domain
             CreatedBy = actorType == ActorType.User ? createdBy : null;
         }
 
+        /// <summary>
+        /// Foreign key to the associated user.
+        /// </summary>
         public Guid UserId { get; private set; }
 
+        /// <summary>
+        /// The type of event that occurred.
+        /// </summary>
         public UserEventType EventType { get; private set; }
+
+        // Navigation properties
+
+        /// <summary>
+        /// The user associated with this history record.
+        /// </summary>
+        public User User { get; set; } = null!;
 
         // Factory methods
 
