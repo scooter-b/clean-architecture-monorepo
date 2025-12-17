@@ -1,6 +1,6 @@
-﻿using Shared.Entities;
-using Shared.Entities.Enums;
-using Shared.Entities.Extensions;
+﻿using Shared.Core.Entities;
+using Shared.Core.Entities.Enums;
+using Shared.Core.Entities.Extensions;
 using User.Domain.Enums;
 
 namespace User.Domain
@@ -61,6 +61,20 @@ namespace User.Domain
         /// The date and time when the user was deactivated. Null if the user is active.
         /// </summary>
         public DateTime? DeactivatedAt { get; private set; } = null;
+
+        // Computed properties
+
+        /// <summary>
+        /// The full name of the user, combining first and last names.
+        /// </summary>
+        public string FullName { get; private set; } = default!;
+
+        // Navigation properties
+
+        /// <summary>
+        /// The collection of history records associated with the user.
+        /// </summary>
+        public ICollection<UserHistory> Histories { get; set; } = new List<UserHistory>();
 
         // Factory methods
 

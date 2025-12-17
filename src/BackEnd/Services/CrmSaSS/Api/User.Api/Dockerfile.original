@@ -4,20 +4,15 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 5000
-EXPOSE 5001
+EXPOSE 8080
+EXPOSE 8081
 
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Directory.Packages.props", "."]
 COPY ["src/BackEnd/Services/CrmSaSS/Api/User.Api/User.Api.csproj", "src/BackEnd/Services/CrmSaSS/Api/User.Api/"]
-COPY ["src/BackEnd/Services/CrmSaSS/Core/User.Application/User.Application.csproj", "src/BackEnd/Services/CrmSaSS/Core/User.Application/"]
-COPY ["src/BackEnd/Services/CrmSaSS/Core/Domain/User.Domain/User.Domain.csproj", "src/BackEnd/Services/CrmSaSS/Core/Domain/User.Domain/"]
-COPY ["src/BackEnd/Services/_Libraries/Shared.Core/Shared.Core.csproj", "src/BackEnd/Services/_Libraries/Shared.Core/"]
-COPY ["src/BackEnd/Services/CrmSaSS/Infrastructure/User.Persistence/User.Persistence.csproj", "src/BackEnd/Services/CrmSaSS/Infrastructure/User.Persistence/"]
 RUN dotnet restore "./src/BackEnd/Services/CrmSaSS/Api/User.Api/User.Api.csproj"
 COPY . .
 WORKDIR "/src/src/BackEnd/Services/CrmSaSS/Api/User.Api"

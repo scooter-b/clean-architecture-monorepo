@@ -1,6 +1,6 @@
-﻿using Shared.Entities.Base;
+﻿using Shared.Core.Entities;
 
-namespace Shared.Repositories.Interfaces
+namespace Shared.Core.Repositories.Interfaces
 {
     /// <summary>
     /// The generic repository interface for CRUD operations
