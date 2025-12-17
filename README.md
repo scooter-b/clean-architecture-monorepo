@@ -34,3 +34,12 @@ Each microservice follows this layered approach, ensuring clarity and testabilit
 - Infrastructure Layer → Persistence
 - API Layer → REST entry points
 
+## 🔗 Project Dependencies
+```mermaid
+graph TD
+	A[API Layer] --> B[Application Layer]
+	A --> D[Infrastructure Layer]
+	D --> B
+	B --> C[Domain Layer]
+	C --> E[Shared.Core]
+```
