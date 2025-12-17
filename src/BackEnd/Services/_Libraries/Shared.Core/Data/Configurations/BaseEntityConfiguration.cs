@@ -1,13 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shared.Core.Data.Conventions;
+using Shared.Core.Entities;
 
-namespace Shared.Core.Entities.Configurations
+namespace Shared.Core.Data.Configurations
 {
     public class BaseEntityConfiguration : IEntityTypeConfiguration<BaseEntity>
     {
         public void Configure(EntityTypeBuilder<BaseEntity> builder)
         {
             builder.HasKey(e => e.Id);
+
             builder.Property(e => e.Id)
                 .HasColumnName("id");
 
@@ -15,10 +18,7 @@ namespace Shared.Core.Entities.Configurations
                 .HasColumnName("created_at")
                 .IsRequired()
                 .HasColumnType("timestamp with time zone")
-                .HasConversion(
-                    v => v, // when saving to database
-                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc) // when reading from database
-                );
+                .HasConversion(UtcConverters.UtcDateTimeConverter);
 
             builder.Property(e => e.CreatedByActorType)
                 .HasColumnName("created_by_actor_type")
@@ -30,10 +30,7 @@ namespace Shared.Core.Entities.Configurations
             builder.Property(e => e.UpdatedAt)
                 .HasColumnName("updated_at")
                 .HasColumnType("timestamp with time zone")
-                .HasConversion(
-                    v => v, // when saving to database
-                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : (DateTime?)null // when reading from database
-                );
+                .HasConversion(UtcConverters.NullableUtcDateTimeConverter);
 
             builder.Property(e => e.UpdatedByActorType)
                 .HasColumnName("updated_by_actor_type");
@@ -44,10 +41,7 @@ namespace Shared.Core.Entities.Configurations
             builder.Property(e => e.DeletedAt)
                 .HasColumnName("deleted_at")
                 .HasColumnType("timestamp with time zone")
-                .HasConversion(
-                    v => v, // when saving to database
-                    v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : (DateTime?)null // when reading from database
-                );
+                .HasConversion(UtcConverters.NullableUtcDateTimeConverter);
 
             builder.Property(e => e.DeletedByActorType)
                 .HasColumnName("deleted_by_actor_type");

@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Core.Repositories.Interfaces;
 using Shared.Repositories;
+using User.Application.Interfaces;
+using User.Persistence.Repositories;
 
 namespace User.Persistence
 {
@@ -16,6 +18,9 @@ namespace User.Persistence
                 options.UseNpgsql(configuration.GetConnectionString("Database")));
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserHistoryRepository, UserHistoryRepository>();
 
             return services;
         }
