@@ -5,7 +5,7 @@ namespace Shared.Core.Entities
     /// <summary>
     /// The base entity class that includes common properties for all entities.
     /// </summary>
-    public class BaseEntity
+    public abstract class BaseEntity
     {
         /// <summary>
         /// The unique identifier for the entity.
