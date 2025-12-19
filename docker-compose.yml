@@ -4,7 +4,7 @@ services:
     container_name: user-api
     build:
       context: .
-      dockerfile: src/BackEnd/Services/CrmSaSS/Api/User.Api/Dockerfile
+      dockerfile: src/BackEnd/Services/CrmSaSS/User/User.Api/Dockerfile
     # ports:
     #   - "5000:5000"
     #   - "5001:5001"
