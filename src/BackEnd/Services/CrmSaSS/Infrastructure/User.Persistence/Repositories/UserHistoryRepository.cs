@@ -1,5 +1,5 @@
 ﻿using Shared.Repositories;
-using User.Application.Interfaces;
+using User.Application.Contracts.Persistence;
 using User.Persistence.Contexts;
 
 namespace User.Persistence.Repositories

@@ -1,6 +1,6 @@
 ﻿using Shared.Core.Entities;
 
-namespace Shared.Core.Repositories.Interfaces
+namespace Shared.Core.Contracts.Persistence
 {
     /// <summary>
     /// The generic repository interface for CRUD operations
