@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Core.Contracts.Persistence;
 using Shared.Core.Data.Extensions;
-using Shared.Core.Repositories.Interfaces;
 using Shared.Repositories;
-using User.Application.Interfaces;
+using User.Application.Contracts.Persistence;
 using User.Domain.Enums;
 using User.Persistence.Contexts;
 using User.Persistence.Repositories;
