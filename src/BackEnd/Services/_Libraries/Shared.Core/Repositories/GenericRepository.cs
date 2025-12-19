@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Shared.Core.Contracts.Persistence;
 using Shared.Core.Entities;
-using Shared.Core.Repositories.Interfaces;
 
 namespace Shared.Repositories
 {
