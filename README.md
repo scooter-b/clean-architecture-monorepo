@@ -43,3 +43,31 @@ graph TD
 	B --> C[Domain Layer]
 	C --> E[Shared.Core]
 ```
+
+## EF Core Migrations
+1. Navigate to the Persistence Project
+Open your terminal and change the directory to the project containing your DbContext.
+`cd C:\Users\scott\source\repos\clean-architecture-monorepo\src\BackEnd\Services\CrmSaSS\User\User.Persistence`
+
+2. Adding a New Migration
+When creating a migration, you must point to the Startup Project (-s) so EF Core can find your database credentials in appsettings.json.
+	- Command Template:
+	
+	  `dotnet ef migrations add <migration-name> -s ..\<api-start-up-project>\<api-start-up-project>.csproj`
+	- Example Implementation:
+	
+	  `dotnet ef migrations add inital-create -s ..\User.Api\User.Api.csproj`
+
+3. Removing a Migration
+Use this command to delete the <b>last</b> migration that was created but <b>has not yet been pushed</b> to the database. This safely updates the model snapshot.
+	- Command Template:
+	
+	  `dotnet ef migrations remove -s ..\<api-start-up-project>\<api-start-up-project>.csproj`
+	- Example Implementation:
+	
+	  `dotnet ef migrations remove -s ..\User.Api\User.Api.csproj`
+
+4. Updating the Database
+- TODO
+
+

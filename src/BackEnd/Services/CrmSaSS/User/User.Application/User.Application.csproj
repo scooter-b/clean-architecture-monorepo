@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Folder Include="Features\User\Queries\" />
+    <Folder Include="_Common\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,11 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Core.Abstractions;
 using Shared.Core.Contracts.Persistence;
 using Shared.Core.Data.Extensions;
+using Shared.Core.DependencyInjection;
+using Shared.Core.Persistence;
 using Shared.Repositories;
 using User.Application.Contracts.Persistence;
 using User.Domain.Enums;
+using User.Domain.Interfaces;
 using User.Persistence.Contexts;
 using User.Persistence.Repositories;
 
@@ -79,9 +83,22 @@ namespace User.Persistence
             // Register generic repository for all entities
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+            // Register the Unit of Work
+            services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork<UserDbContext>));
+
+            // Register generic read and write repositories
+            services.AddScoped(typeof(IReadRepository<>), typeof(ReadWriteRepository<>));
+            services.AddScoped(typeof(IWriteRepository<>), typeof(ReadWriteRepository<>));
+
+            //services.AddSharedInfrastructure();
+
             // Register user-specific repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserHistoryRepository, UserHistoryRepository>();
+
+            // Register domain-specific repositories
+            services.AddScoped<IUserAccountRepository, UserAccountRepository>();
+            services.AddScoped<IUserAccountLogRepository, UserAccountLogRepository>();
 
             return services;
         }

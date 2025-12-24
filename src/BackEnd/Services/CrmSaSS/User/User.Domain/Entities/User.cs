@@ -3,7 +3,7 @@ using Shared.Core.Entities.Enums;
 using Shared.Core.Entities.Extensions;
 using User.Domain.Enums;
 
-namespace User.Domain
+namespace User.Domain.Entities
 {
     /// <summary>
     /// The user entity representing a system user.

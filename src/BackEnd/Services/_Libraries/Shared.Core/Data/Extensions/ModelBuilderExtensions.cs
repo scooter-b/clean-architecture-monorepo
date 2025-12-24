@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Shared.Core.Entities;
+using Shared.Core.Primitives;
 using System.Text.RegularExpressions;
 
 namespace Shared.Core.Data.Extensions

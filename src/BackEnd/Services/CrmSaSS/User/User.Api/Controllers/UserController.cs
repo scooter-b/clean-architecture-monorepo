@@ -31,12 +31,9 @@ namespace User.Api.Controllers
         public async Task<ActionResult> CreateUser([FromBody] CreateUserRequestDto request)
         {
             var command = new CreateUserRequest(
-                    new BaseUserRequest
-                    {
-                        FirstName = request.FirstName,
-                        LastName = request.LastName,
-                        Email = request.Email
-                    });
+                request.FirstName,
+                request.LastName,
+                request.Email);
 
             var userId = await _mediator.Send(command);
 

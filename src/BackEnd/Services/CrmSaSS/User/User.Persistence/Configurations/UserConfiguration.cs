@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace User.Persistence.Configurations
 {
     /// <summary>
-    /// Configures the EF Core entity mapping for <see cref="Domain.User"/>.
+    /// Configures the EF Core entity mapping for <see cref="Domain.Entities.User"/>.
     /// </summary>
     /// <remarks>
     /// This configuration enforces contributor‑safe rules for the <c>User</c> entity:
@@ -40,10 +40,10 @@ namespace User.Persistence.Configurations
     /// These rules ensure data integrity, enforce normalization, and provide
     /// contributor‑safe conventions for onboarding.
     /// </remarks>
-    public class UserConfiguration : IEntityTypeConfiguration<Domain.User>
+    public class UserConfiguration : IEntityTypeConfiguration<Domain.Entities.User>
     {
         /// <summary>
-        /// Configures the <see cref="Domain.User"/> entity using the provided builder.
+        /// Configures the <see cref="Domain.Entities.User"/> entity using the provided builder.
         /// </summary>
         /// <param name="builder">
         /// The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.
@@ -60,7 +60,7 @@ namespace User.Persistence.Configurations
         /// with <c>UserHistory</c>.
         /// </para>
         /// </remarks>
-        public void Configure(EntityTypeBuilder<Domain.User> builder)
+        public void Configure(EntityTypeBuilder<Domain.Entities.User> builder)
         {
             // FirstName: required, max length 100
             builder.Property(e => e.FirstName)

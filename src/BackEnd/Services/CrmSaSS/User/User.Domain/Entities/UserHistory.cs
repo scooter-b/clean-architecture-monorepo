@@ -2,7 +2,7 @@
 using Shared.Core.Entities.Enums;
 using User.Domain.Enums;
 
-namespace User.Domain
+namespace User.Domain.Entities
 {
     /// <summary>
     /// The user history entity that records significant events related to a user.

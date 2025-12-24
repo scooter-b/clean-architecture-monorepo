@@ -1,53 +1,58 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Core.Data;
+using User.Domain.Entities;
 
 namespace User.Persistence.Contexts
 {
     /// <summary>
-    /// Represents the Entity Framework Core database context for user‑related entities.
+    /// The primary Database Context for the User module.
+    /// Inherits shared conventions (UTC, AuditPrincipal, snake_case) from <see cref="BaseDbContext"/>.
     /// </summary>
-    /// <remarks>
-    /// Inherits from <see cref="BaseDbContext"/> to enforce shared conventions such as
-    /// GUID primary keys and snake_case naming. This context defines DbSets for
-    /// <c>User</c> and <c>UserHistory</c> entities and applies configuration classes
-    /// from the current assembly.
-    /// </remarks>
-    public class UserDbContext(DbContextOptions options) : BaseDbContext(options)
+    /// <param name="options">Configuration options provided by the Dependency Injection container.</param>
+    public class UserDbContext(DbContextOptions<UserDbContext> options) : BaseDbContext(options)
     {
         /// <summary>
-        /// Gets or sets the <see cref="DbSet{TEntity}"/> representing application users.
+        /// Core account data including identity, status, and security metadata.
         /// </summary>
-        public DbSet<Domain.User> Users { get; set; }
+        public DbSet<UserAccount> UserAccounts { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="DbSet{TEntity}"/> representing historical audit records
-        /// of user lifecycle events (e.g., creation, activation, deactivation).
+        /// Audit trail for user-related actions and administrative changes.
         /// </summary>
-        public DbSet<Domain.UserHistory> UserHistories { get; set; }
+        public DbSet<UserAccountLog> UserAccountLogs { get; set; }
 
         /// <summary>
-        /// Configures the EF Core model for the <see cref="UserDbContext"/>.
+        /// Legacy user records maintained for migration or synchronization purposes.
+        /// Uses explicit namespacing to avoid collision with modern User entities.
         /// </summary>
-        /// <param name="modelBuilder">
-        /// The <see cref="ModelBuilder"/> used to configure entity mappings.
-        /// </param>
+        public DbSet<Domain.Entities.User> Users { get; set; }
+
+        /// <summary>
+        /// Temporal history records allowing for point-in-time state recovery.
+        /// </summary>
+        public DbSet<UserHistory> UserHistories { get; set; }
+
+        /// <summary>
+        /// Configures the EF Core model specific to the User module.
+        /// </summary>
+        /// <param name="modelBuilder">The builder used to construct the database schema.</param>
         /// <remarks>
         /// <para>
-        /// Calls the base implementation to apply shared contributor‑safe conventions
-        /// (GUID PKs, snake_case naming).
+        /// 1. Calls <c>base.OnModelCreating</c> to enforce global standards (UTC, Auditing, Global Filters).
         /// </para>
         /// <para>
-        /// Then applies all <see cref="IEntityTypeConfiguration{TEntity}"/> classes
-        /// defined in the current assembly, ensuring context‑specific mappings
-        /// (such as enum conversions or property constraints) are applied consistently.
+        /// 2. Uses Assembly Scanning to automatically find and apply all 
+        /// <see cref="IEntityTypeConfiguration{TEntity}"/> implementations in this project.
         /// </para>
         /// </remarks>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Apply shared conventions from BaseDbContext
+            // Apply global architectural rules defined in the BaseDbContext
             base.OnModelCreating(modelBuilder);
 
-            // Apply context-specific configurations from this assembly
+            // AUTOMATED CONFIGURATION DISCOVERY:
+            // Automatically registers all Fluent API configurations (e.g., UserAccountConfiguration)
+            // located in this assembly. This prevents this file from becoming bloated as new entities are added.
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserDbContext).Assembly);
         }
     }

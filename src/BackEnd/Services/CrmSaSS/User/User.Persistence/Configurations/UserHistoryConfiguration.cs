@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using User.Domain.Entities;
 
 namespace User.Persistence.Configurations
 {
     /// <summary>
-    /// Configures the EF Core entity mapping for <see cref="Domain.UserHistory"/>.
+    /// Configures the EF Core entity mapping for <see cref="Domain.Entities.UserHistory"/>.
     /// </summary>
     /// <remarks>
     /// This configuration enforces contributor‑safe rules for the <c>UserHistory</c> entity:
@@ -23,10 +24,10 @@ namespace User.Persistence.Configurations
     /// </list>
     /// By enforcing these constraints, the audit trail remains complete and reliable.
     /// </remarks>
-    public class UserHistoryConfiguration : IEntityTypeConfiguration<Domain.UserHistory>
+    public class UserHistoryConfiguration : IEntityTypeConfiguration<UserHistory>
     {
         /// <summary>
-        /// Configures the <see cref="Domain.UserHistory"/> entity using the provided builder.
+        /// Configures the <see cref="Domain.Entities.UserHistory"/> entity using the provided builder.
         /// </summary>
         /// <param name="builder">
         /// The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.
@@ -37,7 +38,7 @@ namespace User.Persistence.Configurations
         /// preventing incomplete audit records from being persisted.
         /// </para>
         /// </remarks>
-        public void Configure(EntityTypeBuilder<Domain.UserHistory> builder)
+        public void Configure(EntityTypeBuilder<UserHistory> builder)
         {
             // UserId must always be present to link the history record to a user
             builder.Property(e => e.UserId)

@@ -1,98 +1,76 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Shared.Core.Constants;
 using Shared.Core.Data.Converters;
 using Shared.Core.Data.Extensions;
+using Shared.Core.ValueObjects;
 
 namespace Shared.Core.Data
 {
     /// <summary>
-    /// Provides a base <see cref="DbContext"/> implementation that enforces
-    /// shared conventions across all derived contexts.
+    /// A reusable base database context that enforces organizational standards across all modules.
+    /// Uses a .NET Primary Constructor to pass <see cref="DbContextOptions"/> to the underlying EF provider.
     /// </summary>
-    /// <remarks>
-    /// This abstract base class ensures that common configuration logic
-    /// (such as GUID primary keys and snake_case naming) is consistently
-    /// applied to all entities. Derived DbContexts inherit these rules
-    /// automatically.
-    /// </remarks>
+    /// <param name="options">The configuration options for this context (Connection strings, lazy loading, etc.).</param>
     public abstract class BaseDbContext(DbContextOptions options) : DbContext(options)
     {
         /// <summary>
-        /// Configures global conventions for the EF Core model.
+        /// Configures global mapping rules and conventions for all entities in this context.
+        /// These rules are applied to the entire model before specific entity configurations.
         /// </summary>
-        /// <param name="configurationBuilder">
-        /// The <see cref="ModelConfigurationBuilder"/> used to define conventions
-        /// applied across all entities in the model.
-        /// </param>
-        /// <remarks>
-        /// This override enforces contributor‑safe conventions for <see cref="DateTime"/> properties:
-        /// <list type="bullet">
-        /// <item>
-        /// <description>
-        /// Applies a <c>UtcDateTimeConverter</c> to all non‑nullable <see cref="DateTime"/> properties,
-        /// ensuring values are stored and retrieved in UTC.
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <description>
-        /// Applies a <c>NullableUtcDateTimeConverter</c> to all nullable <see cref="DateTime"/> properties,
-        /// ensuring consistent UTC handling even when values are optional.
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <description>
-        /// Standardizes the database column type for PostgreSQL as <c>timestamp with time zone</c>,
-        /// aligning with PostgreSQL best practices for storing UTC timestamps.
-        /// </description>
-        /// </item>
-        /// </list>
-        /// By centralizing these rules, contributors don’t need to remember to apply converters
-        /// or column types manually in each entity configuration.
-        /// </remarks>
+        /// <param name="configurationBuilder">The builder used to define global conventions.</param>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
-            // Apply the converters to ALL DateTime properties in the entire Model
+            // GLOBAL DATETIME STANDARDIZATION (UTC)
+            // Ensures every DateTime property in the database is automatically converted 
+            // to UTC when saving and marked as UTC when reading. This prevents time-zone 
+            // bugs and ensures consistency across distributed systems.
             configurationBuilder.Properties<DateTime>()
                 .HaveConversion<UtcDateTimeConverter>();
 
+            // NULLABLE DATETIME HANDLING
+            // Extends the UTC conversion logic to nullable DateTime fields, ensuring 
+            // optional timestamps (like 'DeletedAt' or 'ModifiedAt') maintain UTC integrity.
             configurationBuilder.Properties<DateTime?>()
                 .HaveConversion<NullableUtcDateTimeConverter>();
+
+            // VALUE OBJECT MAPPING
+            // Automatically treats every value object property as a string column 
+            // rather than a separate table.
+            configurationBuilder
+                .Properties<AuditPrincipal>()
+                // Uses the custom converter to pipe the record through the .Create() factory method.
+                .HaveConversion<AuditPrincipalConverter>()
+                // Enforces a consistent database schema by applying the same MaxLength 
+                // to every column that stores an AuditPrincipal identity.
+                .HaveMaxLength(EntityConfigurationConstants.AuditPrincipal.MaxLength);
+
+            configurationBuilder
+                .Properties<AuditAction>()
+                // Uses the custom converter to pipe the dot-notation record (Category.Operation) 
+                // into a primitive string column for database storage.
+                .HaveConversion<AuditActionConverter>()
+                // Enforces a consistent database schema by applying the same MaxLength 
+                // to every column that stores an AuditAction identity.
+                .HaveMaxLength(EntityConfigurationConstants.AuditAction.MaxLength);
         }
 
-
         /// <summary>
-        /// Configures the EF Core model by applying base entity conventions.
+        /// Configures the shape, data types, and relationships of the database schema.
         /// </summary>
-        /// <param name="modelBuilder">
-        /// The <see cref="ModelBuilder"/> used to configure entity mappings.
-        /// </param>
-        /// <remarks>
-        /// <para>
-        /// The base implementation of <see cref="OnModelCreating"/> is invoked first
-        /// to apply any framework or configuration logic.
-        /// </para>
-        /// <para>
-        /// Finally, <c>ApplyBaseEntityConfiguration()</c> is executed to enforce
-        /// contributor‑safe conventions such as:
-        /// </para>
-        /// <list type="bullet">
-        /// <item>
-        /// <description>GUID primary keys for <c>BaseEntity</c> types.</description>
-        /// </item>
-        /// <item>
-        /// <description>Snake_case naming for tables, columns, constraints, and indexes.</description>
-        /// </item>
-        /// </list>
-        /// <para>
-        /// This method is intentionally run last to override any conflicting
-        /// configurations defined earlier.
-        /// </para>
-        /// </remarks>
+        /// <param name="modelBuilder">The builder being used to construct the model for this context.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Call the base implementation to apply framework defaults
+            // FRAMEWORK DEFAULTS
+            // Calls the base implementation (IdentityDbContext or DbContext).
+            // This must be called first so that standard EF and Identity tables 
+            // are initialized before we apply our custom modifications.
             base.OnModelCreating(modelBuilder);
 
-            // RUN THIS LAST - It must override everything above
+            // GLOBAL OVERRIDES (THE "LAST WORD" RULE)
+            // We run this extension method last to ensure our 'BaseEntity' rules 
+            // (such as Shadow Properties for CreatedAt/ModifiedAt or Global Query Filters 
+            // for Soft Deletes) are applied to every entity in the model, overriding 
+            // any configurations set in previous steps.
             modelBuilder.ApplyBaseEntityConfiguration();
         }
     }
