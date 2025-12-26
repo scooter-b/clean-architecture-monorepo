@@ -18,9 +18,9 @@ namespace Shared.Core.Primitives
             CreatedAtUtc = createdAtUtc ?? DateTime.UtcNow;
             CreatedBy = createdBy;
 
-            // Standard: On creation, modification data matches creation data
-            ModifiedAtUtc = CreatedAtUtc;
-            ModifiedBy = CreatedBy;
+            //// Standard: On creation, modification data matches creation data
+            //ModifiedAtUtc = CreatedAtUtc;
+            //ModifiedBy = CreatedBy;
         }
 
         /// <summary>

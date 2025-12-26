@@ -45,16 +45,20 @@ namespace User.Application.Features.User.Commands.CreateUser
 
             // TODO: fluent validation needed here.
 
+
+            // TODO: Replace with actual actor ID
+            var auditPrincipal = AuditPrincipal.FromUser(Guid.NewGuid());
+            
             // Use factory methods to ensure consistent entity state
             var userAccount = UserAccount.Create(
                 command.FirstName,
                 command.LastName,
                 command.Email,
-                AuditPrincipal.FromUser(Guid.NewGuid())); // TODO: Replace with actual actor ID
+                auditPrincipal);
 
             var auditLog = UserAccountLog.NewUserRegistration(
                 userAccount.Id,
-                "System");
+                auditPrincipal);
 
             // Stage the records in the shared Change Tracker
             await _userAccountRepo.AddAsync(userAccount, ct);
