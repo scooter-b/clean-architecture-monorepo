@@ -1,4 +1,3 @@
-using Scalar.AspNetCore;
 using User.Application;
 using User.Persistence;
 
@@ -10,6 +9,7 @@ builder.Services
     .AddPersistenceServices(builder.Configuration);
 
 builder.Services.AddControllers();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -19,10 +19,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

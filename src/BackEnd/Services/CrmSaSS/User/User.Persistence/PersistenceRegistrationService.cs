@@ -69,7 +69,7 @@ namespace User.Persistence
         public static IServiceCollection AddPersistenceServices(
             this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("Database");
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             // Use the generic extension and map context-specific enum.
             services.AddBaseDbContext<UserDbContext>(
