@@ -1,10 +1,67 @@
+# ==============================================================================
+# BASE SYSTEM INFRASTRUCTURE - CORE SERVICES (2025)
+# ==============================================================================
+# This file defines the foundational container architecture. 
+# Configuration here is shared across all environments.
+#
+# ENVIRONMENT OVERRIDES:
+#   Port mappings and local volume mounts should be kept in 
+#   'docker-compose.override.yml' to keep this base file clean and portable.
+#
+# NETWORKING:
+#   Services communicate internally via container names on the default bridge.
+# ==============================================================================
+
 services:
-  user.api:
+  # GATEWAY: The central ingress point (Reverse Proxy).
+  # All external client requests enter here; it handles routing and aggregation.
+  gateway-api:
+    image: ${DOCKER_REGISTRY-}gatewayapi
+    container_name: gateway-api
+    build:
+      context: .
+      dockerfile: src/BackEnd/Gateways/Gateway.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      - user-api
+
+  # USER SERVICE: Internal-only microservice handling CRM/User logic.
+  # No public ports are defined here to enforce the Gateway Pattern.
+  user-api:
     image: ${DOCKER_REGISTRY-}userapi
     container_name: user-api
     build:
       context: .
       dockerfile: src/BackEnd/Services/CrmSaSS/User/User.Api/Dockerfile
-    # ports:
-    #   - "5000:5000"
-    #   - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      user-db:
+        # Ensures the API only starts once the database is fully ready
+        condition: service_healthy
+
+  # DATABASE: PostgreSQL 17 Instance.
+  # Isolated per microservice to ensure data sovereignty.
+  user-db:
+    image: postgres:17-alpine
+    container_name: user-db
+    restart: always
+    volumes:
+      - user_db_data:/var/lib/postgresql/data 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Your_password123
+      POSTGRES_DB: userdb
+    healthcheck:
+      # Crucial: Prevents dependent services from starting until PG is operational
+      test: ["CMD-SHELL", "pg_isready -U postgres -d userdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  # Managed named volume for persistent database storage
+  user_db_data:
