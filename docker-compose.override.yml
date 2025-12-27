@@ -1,14 +1,38 @@
+# ==============================================================================
+# DOCKER COMPOSE OVERRIDE - LOCAL DEVELOPMENT STANDARDS (2025)
+# ==============================================================================
+# 1. ARCHITECTURE: This project follows the "Gateway Pattern." 
+#    - ONLY the 'gateway-api' should expose public ports.
+#    - Microservices (e.g., 'user-api') must remain private to force all 
+#      traffic, authentication, and logging through the Gateway.
+#
+# 2. PORTS: 
+#    - Gateway: 5000 (Access Scalar UI at http://localhost:5000/scalar/v1)
+#    - Database: 5432 (Exposed for local management tools like DBeaver/pgAdmin)
+#
+# 3. SECRETS: 
+#    - Local User Secrets are mapped into containers to avoid hardcoding 
+#      passwords in appsettings.json.
+#
+# 4. NETWORKING: 
+#    - Internal communication uses service names (e.g., http://user-db:5432).
+# ==============================================================================
 services:
-  user.api:
+  gateway-api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5000
-      - ASPNETCORE_HTTPS_PORTS=5001
+      - ASPNETCORE_HTTP_PORTS=8080
     ports:
-      - "5100:5000"
-      - "5101:5001"
+      - "5000:8080" # Maps http://localhost:5000 to the Gateway
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  user-api:
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8080
+    # No 'ports' section here - forces all traffic through the Gateway
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+  
+  user-db:
+    ports:
+      - "5432:5432" # Allows you to manage the DB from your desktop
